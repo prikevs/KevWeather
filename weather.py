@@ -3,6 +3,8 @@
 
 import requests
 import json
+import datetime
+import os
 from settings import ENV
 
 def getAccessToken():
@@ -62,6 +64,7 @@ def postData(token, data):
         'lan': 'zh',
         'cuid': '123456',
         'ctp': '1',
+        'vol': '9',
     #    'spd': '5',
         'tok': token 
     }
@@ -74,9 +77,15 @@ def textToVoice(data):
     if 'err_no' in voice:
         print voice
         return
-    with open('temp.mp3', 'w') as f:
+    filename = datetime.datetime.now().strftime('%y-%m-%d_%H:%M:%S') + '.mp3'
+    filename = os.path.join('voices', filename)
+    with open(filename, 'w') as f:
         f.write(voice)
+    os.system('mpg123 %s > /dev/null 2>&1 &' % (filename))
 
-if __name__ == '__main__':
+def weatherBroadcast():
     data = getWeatherForecast()
     textToVoice(data)
+
+if __name__ == '__main__':
+    weatherBroadcast()
